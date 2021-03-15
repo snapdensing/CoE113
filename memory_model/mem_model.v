@@ -1,11 +1,20 @@
+/* Data memory model
+ * - Asynchronous reads
+ * - Synchronous writes
+ * - Replace $readmemh() argument with your own memory initialization if needed
+ * -- Argument points to a text file containing hex values of a doubleword per line
+ * -- Default file: datamem.mem
+ * -- For Vivado, use Add Sources -> Simulation Sources -> Add File to include the memory initialization
+ */
+
 `timescale 1ns / 1ps
 
 module mem_model
-    #(  parameter DATA_DEP = 512,
-        parameter ADDR_WID = 9
+    #(  parameter DATA_DEP = 512, // Depth of memory (in doublewords)
+        parameter ADDR_WID = 29   // Doubleword address width (32-3)
     ) 
     (   input   clk,
-        input   [ADDR_WID-1:0]  addr,
+        input   [ADDR_WID-1:0]  addr, // doubleword address
         output  [63:0]          rdata,
         input   wr_en,
         input   [63:0]          wdata,
@@ -14,8 +23,10 @@ module mem_model
     
     reg [63:0] memdata [0:DATA_DEP-1];
     
+    /* Read path */
     assign rdata = memdata[addr];
-        
+    
+    /* Write path */    
     always@(posedge clk) begin
         if (wr_en) begin
             if (wmask[7])
@@ -35,6 +46,11 @@ module mem_model
             if (wmask[0])
                 memdata[addr][7:0]   <= wdata[7:0];
         end
+    end
+    
+    /* Initialization */
+    initial begin
+        $readmemh("datamem.mem",memdata);
     end
         
 endmodule
