@@ -1,7 +1,7 @@
 /* Program memory model
  * - Asynchronous read
  * - Replace $readmemh() argument with your own memory initialization if needed
- * -- Argument points to a text file containing hex values of a doubleword per line
+ * -- Argument points to a text file containing hex values of a word per line
  * -- Default file: progmem.mem
  * -- For Vivado, use Add Sources -> Simulation Sources -> Add File to include the memory initialization
  */
